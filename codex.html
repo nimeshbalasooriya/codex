@@ -1,0 +1,164 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Code Editor</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.4.12/src-noconflict/ace.js"></script> <!-- Ace Editor -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1e1e1e; /* VS Code dark theme background */
+            color: #d4d4d4; /* VS Code text color */
+        }
+
+        .container {
+            width: 90%;
+            margin: 30px auto;
+            background-color: #252526; /* VS Code editor background */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        header {
+            text-align: center;
+        }
+
+        h1 {
+            color: #569cd6; /* VS Code blue accent */
+        }
+
+        .settings {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #editor {
+            height: 500px;
+            width: 100%;
+            margin-bottom: 20px;
+            border: 1px solid #3c3c3c; /* VS Code border color */
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #007acc; /* VS Code button color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 10px;
+        }
+
+        button:hover {
+            background-color: #005a9e; /* VS Code button hover color */
+        }
+
+        .output {
+            margin-top: 20px;
+            background-color: #1e1e1e; /* VS Code terminal background */
+            color: #d4d4d4; /* VS Code terminal text color */
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #3c3c3c;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+
+        select {
+            padding: 10px;
+            background-color: #3c3c3c; /* VS Code dropdown background */
+            color: #d4d4d4;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        select:focus {
+            outline: none;
+            border: 1px solid #007acc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Online Code Editor</h1>
+        </header>
+
+        <div class="settings">
+            <label for="languageSelect">Select Language:</label>
+            <select id="languageSelect" onchange="changeLanguage()">
+                <option value="javascript">JavaScript</option>
+                <option value="python">Python</option>
+                <option value="java">Java</option>
+                <option value="html">HTML</option>
+                <option value="css">CSS</option>
+            </select>
+        </div>
+
+        <div class="editor-container">
+            <div id="editor" class="editor"></div>
+        </div>
+
+        <div class="buttons">
+            <button onclick="runCode()">Run Code</button>
+            <button onclick="downloadCode()">Download Code</button>
+        </div>
+
+        <div id="output" class="output"></div>
+    </div>
+
+    <script>
+        const editor = ace.edit("editor");
+        editor.setTheme("ace/theme/monokai"); // VS Code-like theme
+        editor.session.setMode("ace/mode/javascript"); // Default language
+        editor.setOptions({
+            fontSize: "14px",
+            showPrintMargin: false,
+            wrap: true
+        });
+
+        function changeLanguage() {
+            const language = document.getElementById("languageSelect").value;
+            const mode = {
+                javascript: "ace/mode/javascript",
+                python: "ace/mode/python",
+                java: "ace/mode/java",
+                html: "ace/mode/html",
+                css: "ace/mode/css"
+            }[language];
+            editor.session.setMode(mode);
+        }
+
+        function runCode() {
+            const code = editor.getValue();
+            const output = document.getElementById("output");
+            try {
+                if (document.getElementById("languageSelect").value === "javascript") {
+                    output.textContent = eval(code);
+                } else {
+                    output.textContent = "Code execution is only supported for JavaScript.";
+                }
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        function downloadCode() {
+            const code = editor.getValue();
+            const blob = new Blob([code], { type: "text/plain" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `code.${document.getElementById("languageSelect").value}`;
+            link.click();
+        }
+    </script>
+</body>
+</html>
